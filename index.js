@@ -1,7 +1,7 @@
 import Rx from 'rx';
 import Cycle from '@cycle/core';
 import {div, span, input, p, button, makeDOMDriver} from '@cycle/dom';
-import {Map, List} from 'immutable';
+import {Record, List} from 'immutable';
 
 // An "enum" for the three filter types.
 const FILTER = {
@@ -47,21 +47,11 @@ function intent(sources) {
           clearCompletedAction$};
 }
 
-// Our state (is an Immutable Map and) simply consists of a List of todos
-// and the currently selected filter type.
-const initialState = Map({
-  todos: List(),
-  todoFilter : FILTER.ALL
-});
+// Our state consists of a List of todos and a filter selection.
+const State = Record({ todos: List(), todoFilter: FILTER.ALL });
 
-// And a todo (is an Immutable Map and) simply consists of some text and a
-// boolean indicating whether it's completed or not.
-function newTodo(text) {
-  return Map({
-    text: text,
-    completed: false
-  });
-}
+// A todo is simply some text and a completed flag.
+const Todo = Record({ text: "", completed: false});
 
 // Our model turns each action observable into an observable of state
 // transformations (i.e. functions state => state), then merges the
@@ -72,7 +62,7 @@ function model(actions) {
   // transformation just pushes the new todo onto the front of the todos list.
   const addTodo$ = actions.addTodoAction$
     .map(text => function addTodo(state) {
-      return state.updateIn(['todos'], todos => todos.unshift(newTodo(text)));
+      return state.updateIn(['todos'], todos => todos.unshift(new Todo({text})));
     });
 
   // A removeTodoAction is just the key (in the todos List) of the todo to
@@ -110,7 +100,7 @@ function model(actions) {
   // with initialState.
   return Rx.Observable.merge(
     addTodo$, removeTodo$, todoCompleted$, changeFilter$, clearCompleted$)
-    .startWith(initialState)
+    .startWith(new State())
     .scan((state, transform) => transform(state));
 }
 
