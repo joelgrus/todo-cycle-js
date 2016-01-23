@@ -10,6 +10,8 @@ const FILTER = {
   UNCOMPLETED: "uncompleted"
 }
 
+// intent takes the sources (which here is just the DOM driver) and produces
+// the observable$ corresponding to DOM-interaction-generated actions
 function intent(sources) {
   const { DOM } = sources;
 
@@ -61,9 +63,9 @@ function newTodo(text) {
   });
 }
 
-// Our model will turn each action observable into an observable of state
-// transformations, then merge the transformation observables and `scan` them
-// over the starting state.
+// Our model turns each action observable into an observable of state
+// transformations (i.e. functions state => state), then merges the
+// transformation observable$ and `scan`s them over the starting state.
 function model(actions) {
 
   // An addTodoAction is just the text of the new todo, so the corresponding
