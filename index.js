@@ -131,6 +131,7 @@ function filterSelector(activeFilter, targetFilter) {
   return `#${targetFilter}.filter${active}`;
 }
 
+// Each filterType gets a SPAN#filterType.filter.{active?}
 function renderFilters(activeFilter) {
   return div([
     span(filterSelector(activeFilter, FILTER.ALL), " ALL "),
@@ -139,6 +140,8 @@ function renderFilters(activeFilter) {
   ]);
 }
 
+// No formatting here, just display the text, then a checkbox for completed,
+// and finally an 'x' to remove the todo.
 function renderTodo(idx, todo) {
   return div([
     span(todo.get('text')),
@@ -157,6 +160,7 @@ function renderTodos(todos, activeFilter) {
   )
 }
 
+// Render the state, which is just a filter choice and a List of todos.
 function view(state$) {
   return state$.map(state => {
     return div([
